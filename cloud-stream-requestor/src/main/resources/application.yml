@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    function:
+      definition: responseReceiver;sendRequest
+    stream:
+      poller:
+        fixed-delay: 10000
+      bindings:
+        responseReceiver-in-0:
+          destination: solace/scst/reply/example/>
+        sendRequest-out-0: 
+          destination: solace/scst/request/example

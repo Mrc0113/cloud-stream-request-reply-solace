@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    function:
+      definition: replier
+    stream:
+      bindings:
+        replier-in-0:
+          destination: solace/scst/request/example
