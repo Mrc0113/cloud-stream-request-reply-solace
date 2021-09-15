@@ -29,17 +29,24 @@ public class CloudStreamReplierApplication {
 			String uppercasedPayload = payload.toUpperCase();
 			
 			// Get the Topic to replyTo and correlation ID
-			String replyToTopic = request.getHeaders().get(REPLYTO_DESTINATION_KEY).toString();
-			String cid = request.getHeaders().get(CORRELATION_ID_KEY).toString();
+			String replyToTopic = request.getHeaders().getOrDefault(REPLYTO_DESTINATION_KEY, "").toString();
+			String cid = request.getHeaders().getOrDefault(CORRELATION_ID_KEY, "").toString();
 			
 			System.out.println("Processing request with cid of: " + cid);
 			System.out.println("ReplyTo Topic: " + replyToTopic);
 			
-			// Return Response Message w/ target destination set
-			return MessageBuilder.withPayload(uppercasedPayload)
-					.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic)
-					.setHeader(CORRELATION_ID_KEY, cid)
-					.build();
+			// Return Response Message w/ target destination set only if one provided, otherwise use binding config
+			if (replyToTopic.isEmpty()) {
+				return MessageBuilder.withPayload(uppercasedPayload)
+						.setHeader(CORRELATION_ID_KEY, cid)
+						.build();
+			}
+			else {
+				return MessageBuilder.withPayload(uppercasedPayload)						
+						.setHeader(CORRELATION_ID_KEY, cid)
+						.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic)
+						.build();
+			}
 		};
 	}
 }
