@@ -33,11 +33,11 @@ public class CloudStreamReplierApplication {
 			String cid = request.getHeaders().get(CORRELATION_ID_KEY).toString();
 			
 			System.out.println("Processing request with cid of: " + cid);
-			System.out.println("ReplyTo Topic: " + replyToTopic.toString());
+			System.out.println("ReplyTo Topic: " + replyToTopic);
 			
 			// Return Response Message w/ target destination set
 			return MessageBuilder.withPayload(uppercasedPayload)
-					.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic.toString())
+					.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic)
 					.setHeader(CORRELATION_ID_KEY, cid)
 					.build();
 		};
