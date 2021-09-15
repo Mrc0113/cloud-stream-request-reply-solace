@@ -33,7 +33,7 @@ public class CloudStreamReplierApplication {
 			String cid = request.getHeaders().getOrDefault(CORRELATION_ID_KEY, "").toString();
 			
 			System.out.println("Processing request with cid of: " + cid);
-			System.out.println("ReplyTo Topic: " + replyToTopic.toString());
+			System.out.println("ReplyTo Topic: " + replyToTopic);
 			
 			// Return Response Message w/ target destination set only if one provided, otherwise use binding config
 			if (replyToTopic.isEmpty()) {
@@ -44,7 +44,7 @@ public class CloudStreamReplierApplication {
 			else {
 				return MessageBuilder.withPayload(uppercasedPayload)						
 						.setHeader(CORRELATION_ID_KEY, cid)
-						.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic.toString())
+						.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic)
 						.build();
 			}
 		};
