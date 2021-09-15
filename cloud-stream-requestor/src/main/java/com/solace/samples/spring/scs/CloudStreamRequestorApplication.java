@@ -20,6 +20,9 @@ import com.solacesystems.jcsmp.Topic;
 @SpringBootApplication
 public class CloudStreamRequestorApplication {
 
+	private static String REPLYTO_DESTINATION_KEY = "solace_replyTo";
+	private static String CORRELATION_ID_KEY = "solace_correlationId";
+	
 	private static String REPLYTO_TOPIC_PREFIX = "solace/scst/reply/example/";
 
 	private Map<String, Message<?>> outstandingRequests = new HashMap<String, Message<?>>();
@@ -38,7 +41,7 @@ public class CloudStreamRequestorApplication {
 	public Consumer<Message<String>> responseReceiver() {
 		return msg -> {
 			// Get Correlation ID
-			String correlationId = (String) msg.getHeaders().get("solace_correlationId");
+			String correlationId = (String) msg.getHeaders().get(CORRELATION_ID_KEY);
 			System.out.println("Received response for correlation id: " + correlationId);
 
 			// TODO Process Response here!
@@ -60,8 +63,8 @@ public class CloudStreamRequestorApplication {
 
 			// Create request message with proper headers
 			Message<?> requestMsg = MessageBuilder.withPayload(payload)
-					.setHeader("solace_replyTo", replyToTopic)
-					.setHeader("solace_correlationId", correlationId)
+					.setHeader(REPLYTO_DESTINATION_KEY, replyToTopic)
+					.setHeader(CORRELATION_ID_KEY, correlationId)
 					.build();
 
 			// Keep track of outstanding requests (if desired)

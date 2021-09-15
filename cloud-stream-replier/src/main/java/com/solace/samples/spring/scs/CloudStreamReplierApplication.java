@@ -9,11 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
-import com.solacesystems.jcsmp.Destination;
+
 
 @SpringBootApplication
 public class CloudStreamReplierApplication {
 
+	private static String REPLYTO_DESTINATION_KEY = "solace_replyTo";
+	private static String CORRELATION_ID_KEY = "solace_correlationId";
+	
 	public static void main(String[] args) {
 		SpringApplication.run(CloudStreamReplierApplication.class, args);
 	}
@@ -26,8 +29,8 @@ public class CloudStreamReplierApplication {
 			String uppercasedPayload = payload.toUpperCase();
 			
 			// Get the Topic to replyTo and correlation ID
-			Destination replyToTopic = (Destination) request.getHeaders().get("solace_replyTo");
-			String cid = (String) request.getHeaders().get("solace_correlationId");
+			String replyToTopic = request.getHeaders().get(REPLYTO_DESTINATION_KEY).toString();
+			String cid = request.getHeaders().get(CORRELATION_ID_KEY).toString();
 			
 			System.out.println("Processing request with cid of: " + cid);
 			System.out.println("ReplyTo Topic: " + replyToTopic.toString());
@@ -35,7 +38,7 @@ public class CloudStreamReplierApplication {
 			// Return Response Message w/ target destination set
 			return MessageBuilder.withPayload(uppercasedPayload)
 					.setHeader(BinderHeaders.TARGET_DESTINATION, replyToTopic.toString())
-					.setHeader("solace_correlationId", cid)
+					.setHeader(CORRELATION_ID_KEY, cid)
 					.build();
 		};
 	}
